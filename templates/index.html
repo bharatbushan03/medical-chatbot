@@ -40,16 +40,42 @@
 
 		header {
 			display: flex;
-			justify-content: space-between;
+			flex-direction: column;
 			align-items: center;
+			text-align: center;
+			padding: 20px 0;
+			background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(15, 23, 42, 0));
+			border-radius: 10px;
+			margin-bottom: 8px;
 		}
 
 		h1 {
-			font-size: 18px;
-			margin: 0;
+			font-size: 28px;
+			margin: 0 0 8px 0;
+			background: linear-gradient(135deg, var(--accent), #4ade80);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			font-weight: 700;
+			letter-spacing: -0.5px;
 		}
 
-		.status { color: var(--muted); font-size: 13px; }
+		.tagline {
+			font-size: 14px;
+			color: var(--muted);
+			margin: 0;
+			max-width: 500px;
+		}
+
+		.status {
+			color: var(--accent);
+			font-size: 12px;
+			background: rgba(34, 197, 94, 0.1);
+			padding: 4px 12px;
+			border-radius: 20px;
+			margin-top: 12px;
+			border: 1px solid rgba(34, 197, 94, 0.2);
+		}
 
 		.chat {
 			border: 1px solid var(--border);
@@ -100,6 +126,7 @@
 	<div class="shell">
 		<header>
 			<h1>Medical Chatbot</h1>
+			<p class="tagline">Your assistant for medical document queries</p>
 			<div class="status" id="index-status">Index ready</div>
 		</header>
 
