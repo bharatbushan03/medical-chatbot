@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Medical Chatbot</title>
+	<style>
+		:root {
+			--bg: #0f172a;
+			--card: #111827;
+			--text: #f8fafc;
+			--muted: #cbd5e1;
+			--accent: #22c55e;
+			--border: #1f2937;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			font-family: "Inter", "Segoe UI", sans-serif;
+			background: var(--bg);
+			color: var(--text);
+			min-height: 100vh;
+			display: flex;
+			justify-content: center;
+			padding: 24px 16px 32px;
+		}
+
+		.shell {
+			width: min(900px, 100%);
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			padding: 16px;
+			display: grid;
+			grid-template-rows: auto 1fr auto;
+			gap: 12px;
+		}
+
+		header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		h1 {
+			font-size: 18px;
+			margin: 0;
+		}
+
+		.status { color: var(--muted); font-size: 13px; }
+
+		.chat {
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			padding: 12px;
+			overflow-y: auto;
+			background: #0b1220;
+			min-height: 420px;
+		}
+
+		.msg { padding: 10px 12px; border-radius: 10px; margin-bottom: 10px; max-width: 90%; line-height: 1.5; font-size: 14px; }
+		.bot { background: #111c2f; border: 1px solid var(--border); }
+		.user { background: #1e293b; border: 1px solid var(--border); margin-left: auto; }
+
+		form { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+
+		textarea {
+			width: 100%;
+			min-height: 70px;
+			resize: vertical;
+			background: #0b1220;
+			color: var(--text);
+			border: 1px solid var(--border);
+			border-radius: 10px;
+			padding: 10px;
+			font-size: 14px;
+			outline: none;
+		}
+
+		textarea:focus { border-color: var(--accent); }
+
+		button {
+			border: none;
+			background: var(--accent);
+			color: #0b1220;
+			border-radius: 10px;
+			padding: 12px 18px;
+			font-weight: 700;
+			cursor: pointer;
+		}
+
+		button:active { transform: translateY(1px); }
+
+		.note { color: var(--muted); font-size: 13px; margin: 0; }
+	</style>
+</head>
+<body>
+	<div class="shell">
+		<header>
+			<h1>Medical Chatbot</h1>
+			<div class="status" id="index-status">Index ready</div>
+		</header>
+
+		<div class="chat" id="chat-window">
+			<div class="msg bot">Hi! Ask a concise medical question based on your uploaded documents.</div>
+		</div>
+
+		<form id="chat-form">
+			<textarea id="user-input" name="question" placeholder="Ask about a condition, symptom, or treatment..." required></textarea>
+			<button type="submit">Send</button>
+		</form>
+
+		<p class="note">Not medical advice. Avoid sharing personal information.</p>
+		<p class="note">
+			<a href="#">Terms and conditions</a> | <a href="#">Privacy Policy</a>
+		</p>
+	</div>
+
+	<script>
+		const form = document.getElementById('chat-form');
+		const input = document.getElementById('user-input');
+		const chat = document.getElementById('chat-window');
+		const statusEl = document.getElementById('index-status');
+
+		function appendMessage(text, role) {
+			const div = document.createElement('div');
+			div.className = `msg ${role}`;
+			div.textContent = text;
+			chat.appendChild(div);
+			chat.scrollTop = chat.scrollHeight;
+		}
+
+		async function sendMessage(event) {
+			event.preventDefault();
+			const question = input.value.trim();
+			if (!question) return;
+			appendMessage(question, 'user');
+			input.value = '';
+			appendMessage('Thinking...', 'bot');
+			const thinking = chat.lastElementChild;
+
+			try {
+				const response = await fetch('/chat', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ question })
+				});
+
+				if (!response.ok) throw new Error('Server error');
+				const data = await response.json();
+				thinking.textContent = data.answer || 'No answer returned.';
+			} catch (err) {
+				thinking.textContent = 'Unable to get an answer right now.';
+			}
+		}
+
+		form.addEventListener('submit', sendMessage);
+
+		// Uncomment if you expose /status
+		// async function refreshStatus() {
+		//   try {
+		//     const res = await fetch('/status');
+		//     if (res.ok) {
+		//       const data = await res.json();
+		//       statusEl.textContent = data.index_status || 'Index status unknown';
+		//     }
+		//   } catch (e) {
+		//     statusEl.textContent = 'Index status unknown';
+		//   }
+		// }
+		// refreshStatus();
+	</script>
+</body>
+</html>
