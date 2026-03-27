@@ -110,6 +110,11 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get('/terms', response_class=HTMLResponse)
+async def terms(request: Request):
+    return templates.TemplateResponse("terms.html", {"request": request})
+
+
 @app.post('/chat')
 async def chat(chat_request: ChatRequest):
     question = chat_request.question.strip()
