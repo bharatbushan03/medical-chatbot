@@ -115,6 +115,11 @@ async def terms(request: Request):
     return templates.TemplateResponse("terms.html", {"request": request})
 
 
+@app.get('/privacy', response_class=HTMLResponse)
+async def privacy(request: Request):
+    return templates.TemplateResponse("privacy.html", {"request": request})
+
+
 @app.post('/chat')
 async def chat(chat_request: ChatRequest):
     question = chat_request.question.strip()
